@@ -1,4 +1,5 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import {
@@ -17,12 +18,14 @@ import { formatCurrency, formatDateTime } from '@/lib/utils';
 import type { Sale } from '@/types';
 
 export function InvoicesPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [viewingSale, setViewingSale] = useState<Sale | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
+  const printedRef = useRef<string | null>(null);
 
   const { data: sales, isLoading } = useQuery({
     queryKey: ['sales', search],
@@ -37,13 +40,7 @@ export function InvoicesPage() {
   const total = filtered.length;
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
-  const handleView = async (sale: Sale) => {
-    const full = await fetchSaleById(sale.id);
-    setViewingSale(full);
-    setModalOpen(true);
-  };
-
-  const handlePrint = () => {
+  const handlePrint = useCallback(() => {
     if (!printRef.current) return;
     const printContents = printRef.current.innerHTML;
     const win = window.open('', '', 'width=800,height=600');
@@ -62,6 +59,29 @@ export function InvoicesPage() {
     `);
     win.document.close();
     setTimeout(() => { win.print(); win.close(); }, 500);
+  }, []);
+
+  const printInvoiceNumber = searchParams.get('print');
+
+  useEffect(() => {
+    if (printInvoiceNumber && printInvoiceNumber !== printedRef.current && sales) {
+      printedRef.current = printInvoiceNumber;
+      const match = sales.find((s) => s.invoice_number === printInvoiceNumber);
+      if (match) {
+        fetchSaleById(match.id).then((full) => {
+          setViewingSale(full);
+          setModalOpen(true);
+          setTimeout(handlePrint, 600);
+        });
+      }
+      setSearchParams({}, { replace: true });
+    }
+  }, [printInvoiceNumber, sales, handlePrint, setSearchParams]);
+
+  const handleView = async (sale: Sale) => {
+    const full = await fetchSaleById(sale.id);
+    setViewingSale(full);
+    setModalOpen(true);
   };
 
   const handleDownloadPDF = () => {

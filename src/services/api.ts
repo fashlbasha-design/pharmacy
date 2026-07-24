@@ -193,7 +193,7 @@ export interface CreateSaleInput {
 }
 
 export async function createSale(input: CreateSaleInput): Promise<Sale> {
-  const { data: settings } = await supabase.from('settings').select('invoice_prefix').single();
+  const { data: settings } = await supabase.from('settings').select('invoice_prefix').maybeSingle();
   const prefix = settings?.invoice_prefix ?? 'INV';
 
   const { data: invoiceData, error: rpcError } = await supabase.rpc('generate_invoice_number', {
@@ -312,7 +312,7 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
       supabase.from('products').select('id, cost_price, sale_price, quantity'),
       supabase.from('customers').select('id', { count: 'exact', head: true }),
       supabase.from('sales').select('id', { count: 'exact', head: true }),
-      supabase.from('products').select('id').filter('quantity', 'lte', 'min_stock'),
+      supabase.from('products').select('id, quantity, min_stock'),
       supabase.from('products').select('id').lt('expiry_date', now.toISOString()),
     ]);
 
@@ -337,7 +337,7 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
     totalProducts: productsRes.data?.length ?? 0,
     totalCustomers: customersRes.count ?? 0,
     totalInvoices: salesRes.count ?? 0,
-    lowStockCount: lowStockRes.data?.length ?? 0,
+    lowStockCount: (lowStockRes.data ?? []).filter((p) => p.quantity <= p.min_stock).length,
     expiredCount: expiredRes.data?.length ?? 0,
   };
 }
