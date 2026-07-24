@@ -1,0 +1,1 @@
+import{j as s,g as t}from"./index-DAdQD0qm.js";function a({className:e}){return s.jsx("div",{className:t("skeleton h-4 w-full",e)})}function n(){return s.jsxs("div",{className:"premium-card p-5",children:[s.jsx(a,{className:"h-4 w-24"}),s.jsx(a,{className:"mt-3 h-8 w-32"}),s.jsx(a,{className:"mt-2 h-3 w-20"})]})}export{n as S,a};
