@@ -18,7 +18,7 @@ import { fetchDashboardStats, fetchSalesChartData, fetchTopProducts, fetchRecent
 import { formatCurrency, formatNumber, formatDateTime, cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 
-const PIE_COLORS = ['#4f46e5', '#7c3aed', '#22c55e', '#f59e0b', '#ef4444', '#0ea5e9'];
+const PIE_COLORS = ['#2563eb', '#0d9488', '#22c55e', '#f59e0b', '#ef4444', '#0ea5e9'];
 
 export function DashboardPage() {
   const navigate = useNavigate();
@@ -95,12 +95,12 @@ export function DashboardPage() {
                 <AreaChart data={chartData ?? []} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                   <defs>
                     <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#0d9488" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
@@ -111,8 +111,8 @@ export function DashboardPage() {
                     labelStyle={{ color: isDark ? '#e2e8f0' : '#334155' }}
                     formatter={(value) => formatCurrency(Number(value))}
                   />
-                  <Area type="monotone" dataKey="sales" name="المبيعات" stroke="#4f46e5" strokeWidth={2.5} fill="url(#colorSales)" />
-                  <Area type="monotone" dataKey="profit" name="الأرباح" stroke="#7c3aed" strokeWidth={2.5} fill="url(#colorProfit)" />
+                  <Area type="monotone" dataKey="sales" name="المبيعات" stroke="#2563eb" strokeWidth={2.5} fill="url(#colorSales)" />
+                  <Area type="monotone" dataKey="profit" name="الأرباح" stroke="#0d9488" strokeWidth={2.5} fill="url(#colorProfit)" />
                 </AreaChart>
               </ResponsiveContainer>
             )}
@@ -198,7 +198,7 @@ export function DashboardPage() {
                   <XAxis type="number" tick={{ fontSize: 11, fill: axisColor }} />
                   <YAxis type="category" dataKey="product_name" tick={{ fontSize: 10, fill: axisColor }} width={100} orientation="right" />
                   <Tooltip contentStyle={{ backgroundColor: tooltipBg, border: 'none', borderRadius: '12px' }} />
-                  <Bar dataKey="quantity" name="الكمية" fill="#4f46e5" radius={[0, 6, 6, 0]} />
+                  <Bar dataKey="quantity" name="الكمية" fill="#2563eb" radius={[0, 6, 6, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

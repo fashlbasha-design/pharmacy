@@ -13,6 +13,7 @@ import {
   createProduct, updateProduct, uploadProductImage, deleteProductImage,
   fetchCategories,
 } from '@/services/api';
+import { supabase } from '@/lib/supabase';
 import { generateBarcode, cn } from '@/lib/utils';
 import type { Product, Category } from '@/types';
 
@@ -155,20 +156,12 @@ export function ProductFormModal({ open, onClose, product, categories }: Product
           await updateProduct(created.id, { image_url: uploaded.url });
         }
         // Create notification for new product
-        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/notifications`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            type: 'new_product',
-            title: 'منتج جديد',
-            message: `تمت إضافة المنتج: ${created.name}`,
-            is_read: false,
-          }),
-        }).catch(() => {});
+        await supabase.from('notifications').insert({
+          type: 'new_product',
+          title: 'منتج جديد',
+          message: `تمت إضافة المنتج: ${created.name}`,
+          is_read: false,
+        });
         toast.success('تم إضافة المنتج بنجاح');
       }
       queryClient.invalidateQueries({ queryKey: ['products'] });
